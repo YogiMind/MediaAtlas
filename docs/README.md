@@ -4,7 +4,6 @@
 HTML based interface where you can scan a given path for its directory structure. Dashboard showing the directories with direct links. Should be customizable, add or remove specific directories or even files.
 Ability to add tags to files and directories and let you filter for these tags. 
 
-
 ## Architecture overview
 Backend (serving ifles, scanning dirs, handling tags) -- Python (Flask or FastAPI?)
 
@@ -40,4 +39,3 @@ API -- What are the interfaces of the frontend, backend etc. Good interface abst
 - Learn some JS
 - Generate JSON with metadata
 - SQL
-
