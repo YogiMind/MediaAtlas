@@ -1,4 +1,9 @@
-# Directory Dashboard
+# MediaAtlas
+MediaAtlas is a workflow-oriented media management system that adds semantic structure on top of the filesystem.
+
+Instead of organizing files only by folders, MediaAtlas lets you organize by meaning — using layered identity (hash, path, internal ID), structured tags, and workflow profiles.
+
+Designed for audio, recordings, photos, and production workflows.
 
 ## Idea
 HTML based interface where you can scan a given path for its directory structure. Dashboard showing the directories with direct links. Should be customizable, add or remove specific directories or even files.
