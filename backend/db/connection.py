@@ -1,23 +1,23 @@
 import sqlite3
 from pathlib import Path
-from scanner import importer
+from backend.scanner.importer import import_files, find_changes, check_state
 
 # DIR = Path("/home/scazarch/Pictures")
-DIR = Path("/home/scazarch/Documents/Projects/DirectoryDashboard/backend/db/sample_files")
-DB = Path("sample.db")
+PROJ_DIR = Path("/home/scazarch/Dev/Projects/MediaAtlas")
+DIR = PROJ_DIR / "assets/sample_files"
+DB = PROJ_DIR / "data/sample.db"
+SQL = PROJ_DIR / "backend/db/schema.sql"
 
-# DB = Path("../db/pics.db")
-def main():
+def run():
     with sqlite3.connect(DB) as conn:
-        # # Create tables
-        # with open("schema.sql") as f:
-        #     conn.executescript(f.read())
+
+        # Create tables
+        with open(SQL) as f:
+            conn.executescript(f.read())
+
         # import_files(conn, DIR)
+        #
+        # # generate_tags(conn, DIR)
+        # find_changes(conn, DIR)
+        check_state(conn, DIR)
 
-        # generate_tags(conn, DIR)
-        importer.find_changes(conn, DIR)
-
-
-
-if __name__ == "__main__":
-    main()

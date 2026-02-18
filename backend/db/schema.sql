@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS assets (
     size INTEGER NOT NULL,
     modified REAL NOT NULL,
     metadata TEXT,
-    UNIQUE(path),
+    UNIQUE(path)
 );
 
 CREATE INDEX IF NOT EXISTS idx_assets_path ON assets(path);
