@@ -1,21 +1,19 @@
 # Phases
-**Core solids**
-1. Fix DB queries
-2. Proper DB Constraints
-3. Define clear responsibilities
-	- db.py - db access only
-	- scanner.py - filesystem scanning
-	- service.py business logic (import/update)
-4. Change detection
-	- New files
-	- modified
-	- deletions
-	- rename
+**Basic db functionality**
+- Query the database
+- Add files
+- Add tags
 
-**Minimal API**
-FastAPI / Flask
+**Minimal API** (FLASK)
+Make a API call for every action in the backend, backend only responds to requests
 
 **Very simple Frontend**
+- TUI or very simple HTML that can interact with backend via API
+- Display files in database, remove and rename files
+
+**Increase functionality complexity**
+Now with a very basic architecture that is testable, start adding more core functionality:
+- Move and create files. 
 
 
 
@@ -27,8 +25,8 @@ FastAPI / Flask
 ### Medium priority
 ### Low priority
 # In Progress
-- Detect changes to files
 - Generate tags based on dir-structure
+- State change detection
 # Done
 - Import files to database
 - Avoid duplicates (based on Path and Hash)

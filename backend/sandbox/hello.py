@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, render_template
 from markupsafe import escape
 
 app = Flask(__name__)
@@ -6,6 +6,13 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     return "Index Page"
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        name = request.form["username"]
+        return f"Hello {name}, POST request received"
+    return render_template("name.html")
 
 @app.route("/hello")
 def hello_world():
@@ -25,3 +32,6 @@ def show_post(post_id):
 def show_subpath(subpath):
     # show the subpath after /path/
     return f'Subpath {escape(subpath)}'
+
+if __name__ == "__main__":
+    app.run()

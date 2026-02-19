@@ -1,6 +1,6 @@
 from pathlib import Path
-from backend.db.models import *
-from backend.scanner.file_hash import hash_file
+from backend.core.db import *
+from backend.core.utils import hash_file
 
 def import_files(conn, dir):
     for p in Path(dir).rglob("*"):
