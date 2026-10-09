@@ -62,3 +62,17 @@ def test_duplicate_files_both_renamed(tmp_path):
     changes = check_state(conn, library)
     assert len(changes["renamed"]) == 2
     assert changes["removed"] == [] and changes["new"] == []
+
+def test_scanning_one_folder_ignores_assets_from_another(tmp_path):
+    a, b = tmp_path / "a", tmp_path / "b"
+    a.mkdir(); b.mkdir()
+    (a / "one.wav").write_bytes(b"one")
+    (b / "two.wav").write_bytes(b"two")
+
+    conn = make_db(tmp_path)
+    apply_changes(conn, check_state(conn, a))
+    apply_changes(conn, check_state(conn, b))
+
+    # Scanning b must not report a's files as removed
+    assert check_state(conn, b)["removed"] == []
+    assert check_state(conn, a)["removed"] == []

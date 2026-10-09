@@ -18,6 +18,8 @@ def check_state(conn, root):
         dict with keys "new", "modified", "renamed", "removed".
         "renamed" holds (old_path, new_path) tuples; the others hold paths.
     """
+    root = Path(root).resolve()      # add as the first line: one canonical form of the path
+
     disk_files = {}   # path -> hash, for every file currently on disk
     db_files = {}     # path -> hash, for every file the DB knows about
     new_temp = {}     # hash -> [paths]: disk files with an unknown path,
@@ -38,8 +40,11 @@ def check_state(conn, root):
     rows = conn.execute(
         "SELECT id, path, content_hash FROM assets"
     ).fetchall()
+
     for row in rows:
-        db_files[row[1]] = row[2]   # row[1] = path, row[2] = content_hash
+        # Only consider DB entries that live under the folder being scanned
+        if Path(row["path"]).is_relative_to(root):      # needs Python 3.9+
+            db_files[row["path"]] = row["content_hash"]
 
     # --- Pass 1: compare by path ---
     for path, disk_hash in disk_files.items():

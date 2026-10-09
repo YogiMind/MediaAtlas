@@ -125,3 +125,58 @@ def get_or_create_tag(conn, namespace, value):
         (namespace, value)
     ).fetchone()
     return row[0]
+
+def get_assets_by_tags(conn, tags):
+    """Return assets that have ALL of the given tags.
+
+    Args:
+        tags: list of (namespace, value) tuples, e.g. [("mood", "dark")].
+
+    Returns:
+        List of rows with id and path.
+    """
+    tags = list(set(tags))
+    # Only the "(...)" placeholders are built with an f-string; the actual
+    # values still go through ? parameters, so this stays injection-safe.
+    conditions = " OR ".join(["(t.namespace=? AND t.value=?)"] * len(tags))
+    params = [part for tag in tags for part in tag]
+
+    sql = f"""
+    SELECT a.id, a.path
+    FROM assets a
+    JOIN asset_tags atg ON atg.asset_id = a.id
+    JOIN tags t ON t.id = atg.tag_id
+    WHERE {conditions}
+    GROUP BY a.id
+    HAVING COUNT(DISTINCT t.id) = ?
+    ORDER BY a.path
+    """
+    return conn.execute(sql, params + [len(tags)]).fetchall()
+
+
+def get_tags_for_asset(conn, asset_id):
+    """Return (namespace, value) rows for every tag on one asset."""
+    return conn.execute(
+        """SELECT t.namespace, t.value
+           FROM tags t JOIN asset_tags atg ON atg.tag_id = t.id
+           WHERE atg.asset_id = ?
+           ORDER BY t.namespace, t.value""",
+        (asset_id,),
+    ).fetchall()
+
+
+def list_assets(conn):
+    """Return all assets (id, path, media_type), ordered by path."""
+    return conn.execute(
+        "SELECT id, path, media_type FROM assets ORDER BY path"
+    ).fetchall()
+
+
+def list_tags(conn):
+    """Return every tag with the number of assets using it."""
+    return conn.execute(
+        """SELECT t.namespace, t.value, COUNT(atg.asset_id) AS n
+           FROM tags t LEFT JOIN asset_tags atg ON atg.tag_id = t.id
+           GROUP BY t.id
+           ORDER BY t.namespace, t.value"""
+    ).fetchall()
