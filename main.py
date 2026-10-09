@@ -1,23 +1,22 @@
-import sqlite3
 from pathlib import Path
-from backend.core.scanner import import_files, find_changes, check_state
+from backend.core.db import connect
+from backend.core.scanner import check_state, apply_changes
+from backend.core.tagging import propose_folder_tags, apply_tag_proposal
 
-# DIR = Path("/home/scazarch/Pictures")
-PROJ_DIR = Path("/home/scazarch/Dev/Projects/MediaAtlas")
+
+PROJ_DIR = Path(__file__).parent          # no more hardcoded home directory
 DIR = PROJ_DIR / "assets/sample_files"
 DB = PROJ_DIR / "data/sample.db"
 SQL = PROJ_DIR / "backend/core/schema.sql"
 
 if __name__ == "__main__":
-    with sqlite3.connect(DB) as conn:
+    with connect(DB) as conn:             # commits on success, rolls back on error
+        conn.executescript(SQL.read_text())
 
-        # Create tables
-        with open(SQL) as f:
-            conn.executescript(f.read())
+        changes = check_state(conn, DIR)
+        print(changes)
+        apply_changes(conn, changes)
 
-        # import_files(conn, DIR)
-        #
-        # # generate_tags(conn, DIR)
-        # find_changes(conn, DIR)
-        check_state(conn, DIR)
+        proposal = propose_folder_tags(DIR)
+        apply_tag_proposal(conn, proposal)
 
