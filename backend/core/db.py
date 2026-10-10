@@ -114,6 +114,15 @@ def add_asset_tag(conn, asset_id, tag_id):
     )
 
 
+def remove_asset_tag(conn, asset_id, namespace, value):
+  """Detach a tag from an asset (the tag itself stays in the vocabulary)."""
+  conn.execute(
+      """DELETE FROM asset_tags
+         WHERE asset_id=? AND tag_id=(SELECT id FROM tags WHERE namespace=? AND value=?)""",
+      (asset_id, namespace, value),
+  )
+
+
 def get_or_create_tag(conn, namespace, value):
     """Return the id of this tag, creating it first if needed."""
     conn.execute(
@@ -125,6 +134,7 @@ def get_or_create_tag(conn, namespace, value):
         (namespace, value)
     ).fetchone()
     return row[0]
+
 
 def get_assets_by_tags(conn, tags):
     """Return assets that have ALL of the given tags.
@@ -142,7 +152,7 @@ def get_assets_by_tags(conn, tags):
     params = [part for tag in tags for part in tag]
 
     sql = f"""
-    SELECT a.id, a.path
+    SELECT a.id, a.path, a.media_type
     FROM assets a
     JOIN asset_tags atg ON atg.asset_id = a.id
     JOIN tags t ON t.id = atg.tag_id

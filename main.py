@@ -9,6 +9,7 @@ from backend.core.db import (
 )
 from backend.core.scanner import check_state, apply_changes
 from backend.core.tagging import propose_folder_tags, apply_tag_proposal
+from backend.core.utils import parse_tag
 
 
 """CLI with some commands:
@@ -34,21 +35,6 @@ def open_db(db_path):
     conn = connect(db_path)
     conn.executescript(SCHEMA.read_text())   # safe to repeat: IF NOT EXISTS
     return conn
-
-
-def parse_tag(text):
-    """Turn "mood:dark" into ("mood", "dark"). A bare "dark" becomes ("tag", "dark").
-
-    Used as an argparse `type=`, so bad input produces a normal error message.
-    Tags are lowercased so "Mood:Dark" and "mood:dark" are the same tag.
-    """
-    namespace, sep, value = text.partition(":")
-    if not sep:                       # no colon given
-        namespace, value = "tag", text
-    namespace, value = namespace.strip().lower(), value.strip().lower()
-    if not namespace or not value:
-        raise argparse.ArgumentTypeError(f"invalid tag: {text!r} (use namespace:value)")
-    return namespace, value
 
 
 def print_changes(changes):

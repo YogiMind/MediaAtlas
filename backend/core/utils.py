@@ -32,3 +32,20 @@ def guess_media_type(path):
     """Return a broad media type ("audio", "image", "video", ...) from the file name."""
     mime, _ = mimetypes.guess_type(path)
     return mime.split("/")[0] if mime else "other"
+
+
+def parse_tag(text):
+    """Turn "mood:dark" into ("mood", "dark"). A bare "dark" becomes ("tag", "dark").
+
+    Used as an argparse `type=`, so bad input produces a normal error message.
+    Tags are lowercased so "Mood:Dark" and "mood:dark" are the same tag.
+    """
+    namespace, sep, value = text.partition(":")
+    if not sep:                       # no colon given
+        namespace, value = "tag", text
+    namespace, value = namespace.strip().lower(), value.strip().lower()
+    if not namespace or not value:
+        raise ValueError(f"invalid tag: {text!r} (use namespace:value)")
+    return namespace, value
+
+
