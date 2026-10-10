@@ -40,3 +40,7 @@ Dates are approximate; adjust them to your commit history.
 **Decision:** Identity and filtering fields (path, type, hash, size, modified time) are real columns. Media-specific details (duration, resolution, artist, ...) go in the `assets.metadata` JSON column.
 **Why:** Core fields are queried constantly and benefit from indexes; media fields vary by type and change often.
 **Open:** Promote a metadata field to its own column when you start filtering or sorting by it.
+
+## Files: What does same file mean?
+**Context** What is concidered to be the same file? Currently both rename and modification registers as deletion + new file, removing the tags. And what about a trimmed recording?
+**Decision:** Tiered pipeline, cheapest first: 1. Metadata and filesystem identity (size, mtime, inode); 2. Exact content hashing; 3. Perceptual fingerprints for media (same media, different bytes)
